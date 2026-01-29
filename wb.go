@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 )
 
 var (
@@ -16,7 +15,7 @@ func addReceipt(idOrder, idGood int, price float64) {
 	}
 	ordersOnPVZ[idOrder][idGood] = price
 
-	log.Printf("На склад поступил товар %d из заказа %d, цена %.f руб.", idGood, idOrder, price)
+	fmt.Printf("На склад поступил товар %d из заказа %d, цена %.f руб.\n", idGood, idOrder, price)
 }
 
 func purchaseOrder(idOrder int) {
@@ -42,7 +41,7 @@ func purchaseOrder(idOrder int) {
 	}
 
 	delete(ordersOnPVZ, idOrder)
-	log.Printf("Покупатель забрал заказ %d на сумму %.f руб.", idOrder, sum)
+	fmt.Printf("Покупатель забрал заказ %d на сумму %.f руб.\n", idOrder, sum)
 }
 
 func returnGood(idOrder, idGood int) {
@@ -67,7 +66,7 @@ func returnGood(idOrder, idGood int) {
 		delete(issuedOrders, idOrder)
 	}
 
-	log.Printf("Покупатель вернул товар %d из заказа %d, сумма возврата %.f руб.", idGood, idOrder, price)
+	fmt.Printf("Покупатель вернул товар %d из заказа %d, сумма возврата %.f руб.\n", idGood, idOrder, price)
 }
 
 func closingTheShift() {
@@ -79,5 +78,5 @@ func closingTheShift() {
 			countGoods++
 		}
 	}
-	log.Printf("На складе осталось %d товаров из %d заказов на сумму %.f руб.", countGoods, len(ordersOnPVZ), sum)
+	fmt.Printf("На складе осталось %d товаров из %d заказов на сумму %.f руб.\n", countGoods, len(ordersOnPVZ), sum)
 }
