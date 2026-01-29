@@ -8,14 +8,15 @@ import (
 )
 
 var (
-	errCommand            = errors.New("некорректное действие")             //— если в input прочитали некорректную строку с действием
-	errReceiptCountParam  = errors.New("некорректное поступление")          // — если пришла строка receipt с некорректным количеством параметров
-	errReceiptIDOrder     = errors.New("некорректный поступивший заказ")    //— если для receipt указан не числовой ID заказа
-	errReceiptIDGood      = errors.New("некорректный поступивший товар")    //— если для receipt указан не числовой ID товара
-	errReceiptPrice       = errors.New("некорректная цена поступления")     //— если для receipt указана не числовая цена
-	errPurchaseCountParam = errors.New("некорректная покупка")              //— если пришла строка purchase с некорректным количеством параметров
-	errPurchaseIDOrder    = errors.New("некорректный заказ покупателя")     //— если для purcahse указан не числовой ID заказа
-	errOrderNotExist      = errors.New("несуществующий заказ покупателя")   //— если пытаются купить несуществующий товар на ПВЗ
+	errCommand            = errors.New("некорректное действие")           //— если в input прочитали некорректную строку с действием
+	errReceiptCountParam  = errors.New("некорректное поступление")        // — если пришла строка receipt с некорректным количеством параметров
+	errReceiptIDOrder     = errors.New("некорректный поступивший заказ")  //— если для receipt указан не числовой ID заказа
+	errReceiptIDGood      = errors.New("некорректный поступивший товар")  //— если для receipt указан не числовой ID товара
+	errReceiptPrice       = errors.New("некорректная цена поступления")   //— если для receipt указана не числовая цена
+	errPurchaseCountParam = errors.New("некорректная покупка")            //— если пришла строка purchase с некорректным количеством параметров
+	errPurchaseIDOrder    = errors.New("некорректный заказ покупателя")   //— если для purcahse указан не числовой ID заказа
+	errOrderNotExist      = errors.New("несуществующий заказ покупателя") //— если пытаются купить несуществующий товар на ПВЗ
+	errOrderAlreadyIssued = errors.New("заказ уже выкуплен")
 	errIncorrectReturn    = errors.New("некорректный возврат")              //— если пришла строка return с некорректным количеством параметров
 	errReturnIDOrder      = errors.New("некорректный возвращаемый заказ")   //— если для return указан не числовой ID заказа
 	errReturnIDGood       = errors.New("некорректный возвращаемый товар")   //— если для return указан не числовой ID товара
@@ -66,14 +67,42 @@ func handle(input []string) {
 				fmt.Printf("Ошибка: %v\n", errReceiptPrice)
 				break
 			}
-
 			addReceipt(idOrder, idGood, price)
 		case "purchase":
-			fmt.Println("purchase")
+			if len(command) != 2 {
+				fmt.Printf("Ошибка: %v\n", errPurchaseCountParam)
+				break
+			}
+
+			idOrder, err := strconv.Atoi(command[1])
+			if err != nil {
+				fmt.Printf("Ошибка: %v\n", errPurchaseIDOrder)
+				break
+			}
+
+			purchaseOrder(idOrder)
 		case "return":
-			fmt.Println("return")
+			if len(command) != 3 {
+				fmt.Printf("Ошибка: %v\n", errIncorrectReturn)
+				break
+			}
+
+			idOrder, err := strconv.Atoi(command[1])
+			if err != nil {
+				fmt.Printf("Ошибка: %v\n", errReturnIDOrder)
+				break
+			}
+
+			idGood, err := strconv.Atoi(command[2])
+			if err != nil {
+				fmt.Printf("Ошибка: %v\n", errReturnIDGood)
+				break
+			}
+
+			returnGood(idOrder, idGood)
 		default:
 			fmt.Printf("Ошибка: %v\n", errCommand)
 		}
 	}
+	closingTheShift()
 }
